@@ -8,7 +8,7 @@ We propose a contrastive learning framework, CLAD, for reducing the effect of im
 
 Install requirements: ```pip install -r requirements.txt```
 
-##### Step 1: download datasets and imagenet-pretrained weights
+##### Step 1: Download datasets
 
 We evaluate our method on the ImageNet-9 dataset, and created two foreground sets, with either GrabCut or U2-Net, by segmentation on the original images (for the train set ONLY). The dataset can be downloaded [here](https://drive.google.com/file/d/1FMnN8wd-XmnScV6mwWIeKXXnK0-zgoBL/view?usp=share_link), and then unzipped to the datasets directiory of the repository. Note that if you are using the original ImageNet-9 dataset, we suggest you to generate the foreground segmentations yourself with either GrabCut or U2-Net as we described in the paper rather than directly using the one in ImageNet-9 dataset, as the original ImageNet-9 dataset is saved in JPEG version which lowers the image quality and introduces noise in inpaiting foreground when generating positive samples. 
 
