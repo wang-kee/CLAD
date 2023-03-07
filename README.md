@@ -22,3 +22,13 @@ Note that if you are using the original ImageNet-9 dataset, we suggest you to ge
 ```python main_clad_bg.py --with_con_loss 1```
 * Train CLAD+:
 ```python main_clad_bg.py --with_con_loss 1 --with_pos_loss 1```
+
+#### Citation
+```
+@article{wang2022clad,
+  title={CLAD: A Contrastive Learning based Approach for Background Debiasing},
+  author={Wang, Ke and Machiraju, Harshitha and Choung, Oh-Hyeon and Herzog, Michael and Frossard, Pascal},
+  journal={arXiv preprint arXiv:2210.02748},
+  year={2022}
+}
+```
