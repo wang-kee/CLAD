@@ -219,7 +219,7 @@ def construct_pos_samples(fg, bg, augmentation=True):
     else:
         return torch.stack([normalize(image) for image in stacked])
 
-class parallel_dataset(Dataset):
+class parallel_dataloader(Dataset):
     """ 
     create a pairwise parralle dataloader for 3 datasets, s.t. that can be loaded and shuffled in same order 
     e.g., an anchor image can always be loaded in pair with its pre-segmented foreground.

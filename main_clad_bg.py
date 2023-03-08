@@ -3,20 +3,17 @@ import argparse
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, SequentialSampler
-import matplotlib.pyplot as plt
-import numpy as np
 import wandb
 
-from utis import (set_seed, 
-                  load_datasets, 
-                  load_testsets, 
-                  Neg_Sample_Dictionary, 
-                  shuffle_fg_index, 
-                  cal_contrastive_loss, 
-                  construct_pos_samples, 
-                  parallel_dataset, 
-                  resnet_9l, 
-                  eval_model)
+from src.model import Neg_Sample_Dictionary, resnet_9l
+from src.dataloader import (parallel_dataloader,
+                            load_datasets, 
+                            load_testsets)
+from src.utils import (set_seed, 
+                       shuffle_fg_index, 
+                       cal_contrastive_loss, 
+                       construct_pos_samples, 
+                       eval_model)
 
 def args_parse():
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -36,8 +33,7 @@ def args_parse():
                         help='flag to include supervised loss for positive samples (set to 1 for CLAD+)')
     parser.add_argument('--debug', default=0, type=int,
                         help='debugging flag')
-    
-    parser.add_argument('--imagenet_pretrained_model', default='model_weights/imagenet_pretrained_resnet50.pkl', type=str,
+    parser.add_argument('--imagenet_pretrained_model_dir', default='model_weights/imagenet_pretrained_resnet50_weights.pkl', type=str,
                         help='direction to load the imagenet-pretrained model backbone')    
     parser.add_argument('--train_from_scratch', default=0, type=int,
                         help='flag to train the model from scratch instead of loading imagenet-pretrained weights')    
@@ -55,27 +51,22 @@ def main():
     
     # create dataloader to load the datasets in parallel 
     # e.g. data_train and data_train_fg always have the same foreground, data_train and data_train_bg always have the same background
-    train_dataset = parallel_dataset(data_train, data_train_fg, data_train_bg)
+    train_dataset = parallel_dataloader(data_train, data_train_fg, data_train_bg)
     train_loader = DataLoader(train_dataset,
                               batch_size=args.batch_size,
                               shuffle=True,
                               num_workers=4)
     
-    val_dataset = parallel_dataset(data_val, data_val_randbg, data_val_samebg)
+    val_dataset = parallel_dataloader(data_val, data_val_randbg, data_val_samebg)
     val_loader = DataLoader(val_dataset,
                             batch_size=args.batch_size,
                             sampler=SequentialSampler(val_dataset),
                             num_workers=4)
     
-    # model save direction
-    model_save_dir_best = '../../../scratch/izar/kewang/bg_models/new_resnet_pos_n{}_k{}_withposloss_{}_best.pkl'\
-        .format(args.N_neg_samples, args.lambd, args.with_pos_loss)
-    model_save_dir_last = '../../../scratch/izar/kewang/bg_models/new_resnet_pos_n{}_k{}_withposloss_{}_last.pkl'\
-        .format(args.N_neg_samples, args.lambd, args.with_pos_loss)
-    
     # load imagenet-pretrained model
     imagenet_pretrained_model = resnet_9l()
-    imagenet_pretrained_model.load_state_dict(torch.load('model_weights/imagenet_pretrained_resnet50_weights.pkl'))
+    if not args.train_from_scratch:
+        imagenet_pretrained_model.load_state_dict(torch.load(args.imagenet_pretrained_model_dir))
     
     # imagenet_pretrained_model = torch.load(args.imagenet_pretrained_model)
     
@@ -100,7 +91,13 @@ def main():
         model_name = "Baseline model"
     else:
         model_name = "Customized model"
-
+    
+    # model save direction
+    model_save_dir_best = '../../../scratch/izar/kewang/bg_models/{}_n{}_lambd{}_best.pkl'\
+        .format(model_name, args.N_neg_samples, args.lambd)
+    model_save_dir_last = '../../../scratch/izar/kewang/bg_models/{}_n{}_lambd{}_last.pkl'\
+        .format(model_name, args.N_neg_samples, args.lambd)
+        
     print(f"Training starts for {model_name}, "
           f"lambda = {args.lambd}, "
           f"number of negative samples: {args.N_neg_samples}, "
