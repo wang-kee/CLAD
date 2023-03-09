@@ -29,7 +29,7 @@ Note that if you are using the original ImageNet-9 dataset, we suggest you to ge
 #### Results
 Results for seed set to 42:
 
-| Model\Dataset | Original | Only-foreground | Random-background | Same-background | Background gap ↓ | Only-background ↓ |
+| Model\Dataset | Original | Only-foreground | Random-background | Same-background | Background gap (↓) | Only-background (↓) |
 |:-------------:|:--------:|:---------------:|:-----------------:|:---------------:|:--------------:|:---------------:|
 | **Baseline** |   0.962  |      0.864      |       0.751       |      0.882      |      0.131     |      0.443      |
 |    **CLAD**   |   0.958  |      0.944      |       0.888       |      0.910      |      0.022     |      0.345      |
