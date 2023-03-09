@@ -12,8 +12,8 @@ from src.dataloader import (parallel_dataloader,
 from src.utils import (set_seed, 
                        shuffle_fg_index, 
                        cal_contrastive_loss, 
-                       construct_pos_samples, 
-                       eval_model)
+                       construct_pos_samples)
+from load_eval import eval_model
 
 def args_parse():
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -85,12 +85,12 @@ def main():
     # get model name for current experiment
     if args.with_con_loss and not args.with_pos_loss:
         model_name = "CLAD"
-    elif args.with_con_loss and not args.with_pos_loss:
+    elif args.with_con_loss and args.with_pos_loss:
         model_name = "CLAD+"
     elif not args.with_con_loss and not args.with_pos_loss:
-        model_name = "Baseline model"
+        model_name = "Baseline_model"
     else:
-        model_name = "Customized model"
+        model_name = "Customized_model"
     
     # model save direction
     model_save_dir_best = '../../../scratch/izar/kewang/bg_models/{}_n{}_lambd{}_best.pkl'\
@@ -199,7 +199,7 @@ def main():
             {
                 'train_loss': train_loss,
                 'train_acc': train_acc,
-                'train_acc_randbg': train_acc_pos,
+                'train_acc_pos': train_acc_pos,
                 'val_loss': val_loss,
                 'val_loss_randbg': val_loss_randbg,
                 'val_acc': val_acc,

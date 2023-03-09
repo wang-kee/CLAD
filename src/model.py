@@ -8,7 +8,12 @@ import torch.nn.functional as F
 import numpy as np
 
 class resnet_9l(nn.Module):
-    """ adds intermediate layer output to pytorch resnet-50 structure (output changed to 9 classes) """
+    """ 
+    Custom model structure to official pytorch resnet-50 structure:
+      1) Adds intermediate layer output  
+      2) Output changed to 9 classes 
+    Please do the same for other architectures as well.
+    """
     
     def __init__(self):
         super(resnet_9l, self).__init__()
@@ -24,11 +29,10 @@ class resnet_9l(nn.Module):
 
     def forward(self, x):
         x = self.resnet_layer(x)
-
         latent_representation = self.avgpool(x).view(-1, 2048)
-
         logits = self.fc(latent_representation)
-    
+        
+        # return both latents and logits
         return latent_representation, logits
     
 
