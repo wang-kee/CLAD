@@ -9,9 +9,10 @@ from src.dataloader import load_testsets
 
 def args_parse():
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--load_model_weights_dir', default='../../../scratch/izar/kewang/bg_models/Baseline model_n32_lambd1_best.pkl', type=str, help='model load direction')    
+    parser.add_argument('--load_model_weights_dir', default='CLAD_n32_lambd1_best.pkl', type=str, help='model load direction')    
     return parser.parse_args()
 
+@torch.no_grad()
 def eval_model(model, 
                test_loader, 
                test_loader_fg, 

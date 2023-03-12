@@ -31,10 +31,8 @@ def args_parse():
                         help='flag to include contrastive loss (set to 1 for CLAD)')
     parser.add_argument('--with_pos_loss', default=0, type=int,
                         help='flag to include supervised loss for positive samples (set to 1 for CLAD+)')
-    parser.add_argument('--debug', default=0, type=int,
-                        help='debugging flag')
     parser.add_argument('--imagenet_pretrained_model_dir', default='model_weights/imagenet_pretrained_resnet50_weights.pkl', type=str,
-                        help='direction to load the imagenet-pretrained model backbone')    
+                        help='direction to load the imagenet-pretrained model weights')    
     parser.add_argument('--train_from_scratch', default=0, type=int,
                         help='flag to train the model from scratch instead of loading imagenet-pretrained weights')    
         
@@ -93,9 +91,9 @@ def main():
         model_name = "Customized_model"
     
     # model save direction
-    model_save_dir_best = '../../../scratch/izar/kewang/bg_models/{}_n{}_lambd{}_best.pkl'\
+    model_save_dir_best = '{}_n{}_lambd{}_best.pkl'\
         .format(model_name, args.N_neg_samples, args.lambd)
-    model_save_dir_last = '../../../scratch/izar/kewang/bg_models/{}_n{}_lambd{}_last.pkl'\
+    model_save_dir_last = '{}_n{}_lambd{}_last.pkl'\
         .format(model_name, args.N_neg_samples, args.lambd)
         
     print(f"Training starts for {model_name}, "
@@ -111,9 +109,6 @@ def main():
         
         # the anchor is loaded in parrell with its pre-segmented foreground and background
         for b, ((inputs, target), (fg, _), (bg, _)) in enumerate(train_loader):
-            
-            if args.debug and b == 2:
-                break
             
             optimizer.zero_grad()
             target_copy = target.detach().clone()
@@ -173,9 +168,6 @@ def main():
         
         for b, ((inputs, target), (inputs_randbg, _), (inputs_samebg, _)) in enumerate(val_loader):
             
-            if args.debug and b == 2:
-                break
-            
             inputs, inputs_randbg, inputs_samebg, target = \
                 inputs.to(device), inputs_randbg.to(device), inputs_samebg.to(device), target.to(device)
 
@@ -225,6 +217,7 @@ def main():
               f'BG-gap: {val_acc_samebg - val_acc_randbg:.4f}')
     
     # evaluate model after training complete
+    # note that the result are for the last epoch rather than best epoch
     test_loader, test_loader_fg, test_loader_randbg, test_loader_samebg, test_loader_bg = load_testsets()
     eval_model(model, test_loader, test_loader_fg, test_loader_randbg, test_loader_samebg, test_loader_bg)
     

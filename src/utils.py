@@ -69,7 +69,7 @@ def construct_pos_samples(fg, bg, augmentation=True):
                                           transforms.ColorJitter(),
                                           transforms.ToTensor(),
                                           normalize])
-    
+    # inpaint forground
     mask = 1 - torch.sign(torch.any(fg!=0, dim=1, keepdim=True).int())
     stacked = mask * bg + fg
     
